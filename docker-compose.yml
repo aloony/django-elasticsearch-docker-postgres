@@ -1,0 +1,36 @@
+version: "3.7"
+
+services:
+  db:
+    image: postgres
+    volumes:
+      - postgres_data:/var/lib/postgresql/data/
+    env_file: .env
+
+  elasticsearch:
+    image: elasticsearch:6.8.16
+    environment:
+      - discovery.type=single-node
+    ports:
+      - "9200:9200"
+    volumes:
+      - elasticsearch_config:/etc/elasticsearch/jvm.options.d/
+
+  api:
+    build:
+      context: .
+    command: >
+      sh -c " python manage.py migrate &&
+              python manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    restart: "always"
+    env_file: .env
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+      - elasticsearch
+volumes:
+  postgres_data:
+  elasticsearch_config:
