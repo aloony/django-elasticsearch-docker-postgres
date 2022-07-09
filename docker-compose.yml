@@ -5,16 +5,21 @@ services:
     image: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file: .env
+    env_file: .postgres.env
 
   elasticsearch:
-    image: elasticsearch:6.8.16
+    image: elasticsearch:8.3.2
     environment:
       - discovery.type=single-node
+      - http.cors.enabled=false
+      - xpack.security.transport.ssl.enabled=false
+      - "ES_JAVA_OPTS=-Xms512m -Xmx512m"
+      - ELASTIC_USERNAME=elastic
+      - ELASTIC_PASSWORD=pass
+
     ports:
       - "9200:9200"
-    volumes:
-      - elasticsearch_config:/etc/elasticsearch/jvm.options.d/
+      - "9300:9300" # ik, multiple nodes not used, but anyway, sanity check
 
   api:
     build:
@@ -25,12 +30,12 @@ services:
     ports:
       - "8000:8000"
     restart: "always"
-    env_file: .env
+    env_file: .django.env
     volumes:
       - .:/app
     depends_on:
       - db
       - elasticsearch
+
 volumes:
   postgres_data:
-  elasticsearch_config:

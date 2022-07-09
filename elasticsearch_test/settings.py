@@ -11,6 +11,7 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 """
 import os
 
+from urllib.parse import quote_plus
 from pathlib import Path
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
@@ -38,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'mainapp'
+    'mainapp',
+    'django_elasticsearch_dsl',
+    'django_elasticsearch_dsl_drf',
+    'rest_framework'
 ]
 
 MIDDLEWARE = [
@@ -81,7 +85,7 @@ DATABASES = {
         'HOST': 'db',
         'NAME': os.environ.get('POSTGRES_DB'),
         'USER': os.environ.get('POSTGRES_USER'),
-        'PASSWORD': os.environ.get('POSTGRES_PASS')
+        'PASSWORD': os.environ.get('POSTGRES_PASSWORD')
     }
 }
 
@@ -127,8 +131,13 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# ELASTIC
+elastic_username = os.environ.get('ELASTIC_USERNAME')
+elastic_password = quote_plus(os.environ.get('ELASTIC_PASSWORD'))
+elastic_url = f'{elastic_username}:{elastic_password}@elasticsearch:9200'
+
 ELASTICSEARCH_DSL = {
     'default': {
-        'hosts': 'es:9200'
+        'hosts': [elastic_url]
     }
 }
