@@ -131,6 +131,21 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+# FIXTURES
+
+FIXTURE_DIRS = [
+    'fixtures'
+]
+
+# REST FRAMEWORK
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 20,
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema',
+    'DEFAULT_METADATA_CLASS': 'rest_framework.metadata.SimpleMetadata'
+}
+
 # ELASTIC
 elastic_username = os.environ.get('ELASTIC_USERNAME')
 elastic_password = quote_plus(os.environ.get('ELASTIC_PASSWORD'))

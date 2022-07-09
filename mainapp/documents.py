@@ -15,11 +15,11 @@ class MovieDocument(Document):
     class Django:
         model = Movie
         
-        fields = {
+        fields = [
             'title',
             'description',
             'director'
-        }
+        ]
 
 
 
