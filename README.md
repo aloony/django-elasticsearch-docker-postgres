@@ -17,7 +17,7 @@ docker exec -it <container_id> "/bin/bash"
 ```
 
 ```
-python manage.py loaddata ./fixtures/data.json
+python _generate_fixtures.py && python manage.py loaddata ./fixtures/data.json
 ```
 
 ### 4 - Play around with API
