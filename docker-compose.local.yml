@@ -5,7 +5,7 @@ services:
     image: postgres
     volumes:
       - postgres_data:/var/lib/postgresql/data/
-    env_file: .postgres.env
+    env_file: envs/.postgres.env
 
   elasticsearch:
     image: elasticsearch:8.3.2
@@ -23,16 +23,16 @@ services:
 
   api:
     build:
-      context: .
+      context: backend1
     command: >
       sh -c " python manage.py migrate &&
               python manage.py runserver 0.0.0.0:8000"
     ports:
       - "8000:8000"
     restart: "always"
-    env_file: .django.env
+    env_file: envs/.django.env
     volumes:
-      - .:/app
+      - ./backend1:/app
     depends_on:
       - db
       - elasticsearch
