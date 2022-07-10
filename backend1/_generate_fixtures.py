@@ -8,7 +8,7 @@ faker = Faker()
 
 with open('fixtures/data.json', 'w') as file:
     data = []
-    for i in range(100):
+    for i in range(1000):
         data.append({
             'model': 'mainapp.Movie',
             'fields': {

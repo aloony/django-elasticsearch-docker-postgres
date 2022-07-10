@@ -1,14 +1,13 @@
 import operator
 from functools import reduce
 
-from django.db.models import Q
-
 from rest_framework.filters import SearchFilter
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework.pagination import LimitOffsetPagination
 
 from elasticsearch_dsl import Q as Q_es
+from django_elasticsearch_dsl_drf.viewsets import DocumentViewSet
 
 from mainapp.documents import MovieDocument
 from mainapp.serializers import MovieDocumentSerializer, MovieSerializer
@@ -25,23 +24,28 @@ class MovieSearchWithESAPIView(APIView, LimitOffsetPagination):
     pagination_class = LimitOffsetPagination
     movie_serializer = MovieSerializer
     search_document = MovieDocument
+    serializer_class = MovieSerializer
 
     def get(self, request):
         try:
-            q = Q_es(
+            if request.query_params.get('search') is None:
+                return Response(status=204)
+
+            search = self.search_document.search().query(Q_es(
                 'multi_match',
-                query=self.request.query_params.get('search') if self.request.query_params.get('search') is not None else '',
-                fields = [
-                'title',
-                'description',
-                'director'
-                ])
-            search = self.search_document.search().query(q)
+                query=request.query_params.get('search'),
+                fuzziness='auto',
+                fields=[
+                    'title',
+                    'director',
+                    'description'
+                ]
+            ))
             es_result = search.execute()
 
             result = self.paginate_queryset(es_result, request, view=self)
             serializer = self.movie_serializer(result, many=True)
-            return self.get_paginated_response(serializer.data)
+            return Response(serializer.data, status=200)
         except Exception as e: # bad, bad, bad. I know
             return Response(repr(e), status=500)
 
