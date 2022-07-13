@@ -2,3 +2,7 @@ env
 venv
 env/
 venv/
+flask-env
+flask-venv
+flask-env/
+flask-venv/
